@@ -15,7 +15,7 @@ import com.google.android.gms.vision.barcode.Barcode;
 
 import info.androidhive.barcode.BarcodeCaptureActivity;
 
-public class MainActivity extends Activity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     // use a compound button so either checkbox or switch widgets work.
     private CompoundButton autoFocus;
@@ -32,13 +32,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        statusMessage = findViewById(R.id.status_message);
+        /*statusMessage = findViewById(R.id.status_message);
         barcodeValue = findViewById(R.id.barcode_value);
 
         autoFocus = findViewById(R.id.auto_focus);
         useFlash = findViewById(R.id.use_flash);
 
-        findViewById(R.id.read_barcode).setOnClickListener(this);
+        findViewById(R.id.read_barcode).setOnClickListener(this);*/
     }
 
     /**
@@ -48,14 +48,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
      */
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.read_barcode) {
+        /*if (v.getId() == R.id.read_barcode) {
             // launch barcode activity.
             Intent intent = new Intent(this, BarcodeCaptureActivity.class);
             intent.putExtra(BarcodeCaptureActivity.AutoFocus, autoFocus.isChecked());
             intent.putExtra(BarcodeCaptureActivity.UseFlash, useFlash.isChecked());
 
             startActivityForResult(intent, RC_BARCODE_CAPTURE);
-        }
+        }*/
 
     }
 
@@ -87,7 +87,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             if (resultCode == CommonStatusCodes.SUCCESS) {
                 if (data != null) {
                     Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
-                    statusMessage.setText(info.androidhive.barcode.R.string.barcode_success);
+                    statusMessage.setText(R.string.barcode_success);
                     barcodeValue.setText(barcode.displayValue);
                     Log.d(TAG, "Barcode read: " + barcode.displayValue);
                 } else {

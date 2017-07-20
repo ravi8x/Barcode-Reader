@@ -5,6 +5,14 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <fragment
+        android:id="@+id/barcode_fragment"
+        android:name="info.androidhive.barcode.BarcodeReader"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!--
+
     <TextView
         android:id="@+id/status_message"
         android:layout_width="match_parent"
@@ -55,5 +63,7 @@
         android:layout_alignTop="@+id/auto_focus"
         android:checked="false"
         android:text="@string/use_flash" />
+
+        -->
 
 </RelativeLayout>
