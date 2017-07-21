@@ -19,6 +19,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -35,6 +36,7 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
+import java.util.List;
 
 import info.androidhive.barcode.camera.CameraSource;
 import info.androidhive.barcode.camera.CameraSourcePreview;
@@ -61,6 +63,11 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener {
     // helper objects for detecting taps and pinches.
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
+    private BarcodeListener listener;
+
+    public void setListener(BarcodeListener listener) {
+        this.listener = listener;
+    }
 
     public BarcodeReader() {
         // Required empty public constructor
@@ -83,7 +90,7 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener {
 
         // read parameters from the intent used to launch the activity.
         boolean autoFocus = true;
-        boolean useFlash = true;
+        boolean useFlash = false;
 
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
@@ -148,7 +155,7 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener {
         // graphics for each barcode on screen.  The factory is used by the multi-processor to
         // create a separate tracker instance for each barcode.
         BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(context).build();
-        BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(mGraphicOverlay);
+        BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(mGraphicOverlay, listener);
         barcodeDetector.setProcessor(
                 new MultiProcessor.Builder<>(barcodeFactory).build());
 
@@ -424,5 +431,15 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener {
         public void onScaleEnd(ScaleGestureDetector detector) {
             mCameraSource.doZoom(detector.getScaleFactor());
         }
+    }
+
+    public interface BarcodeListener {
+        void onScanned(Barcode barcode);
+
+        void onScannedMultiple(List<Barcode> barcode);
+
+        void onBitmapScanned(SparseArray<Barcode> sparseArray);
+
+        void onScanError(String errorMessage);
     }
 }

@@ -27,15 +27,17 @@ import info.androidhive.barcode.camera.GraphicOverlay;
  */
 class BarcodeTrackerFactory implements MultiProcessor.Factory<Barcode> {
     private GraphicOverlay<BarcodeGraphic> mGraphicOverlay;
+    private BarcodeReader.BarcodeListener listener;
 
-    BarcodeTrackerFactory(GraphicOverlay<BarcodeGraphic> barcodeGraphicOverlay) {
+    BarcodeTrackerFactory(GraphicOverlay<BarcodeGraphic> barcodeGraphicOverlay, BarcodeReader.BarcodeListener listener) {
         mGraphicOverlay = barcodeGraphicOverlay;
+        this.listener = listener;
     }
 
     @Override
     public Tracker<Barcode> create(Barcode barcode) {
         BarcodeGraphic graphic = new BarcodeGraphic(mGraphicOverlay);
-        return new BarcodeGraphicTracker(mGraphicOverlay, graphic);
+        return new BarcodeGraphicTracker(mGraphicOverlay, graphic, listener);
     }
 
 }

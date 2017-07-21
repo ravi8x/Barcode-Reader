@@ -6,6 +6,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -13,10 +14,13 @@ import android.widget.TextView;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
 
+import java.util.List;
+
 import info.androidhive.barcode.BarcodeCaptureActivity;
+import info.androidhive.barcode.BarcodeReader;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, BarcodeReader.BarcodeListener {
+    private static final String TAG = MainActivity.class.getSimpleName();
     // use a compound button so either checkbox or switch widgets work.
     private CompoundButton autoFocus;
     private CompoundButton useFlash;
@@ -24,13 +28,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView barcodeValue;
 
     private static final int RC_BARCODE_CAPTURE = 9001;
-    private static final String TAG = "BarcodeMain";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        BarcodeReader barcodeReader = (BarcodeReader) getSupportFragmentManager().findFragmentById(R.id.barcode_fragment);
+        barcodeReader.setListener(this);
 
         /*statusMessage = findViewById(R.id.status_message);
         barcodeValue = findViewById(R.id.barcode_value);
@@ -107,5 +113,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    @Override
+    public void onScanned(Barcode barcode) {
+        Log.e(TAG, "onScanned: " + barcode.displayValue);
+    }
+
+    @Override
+    public void onScannedMultiple(List<Barcode> barcodes) {
+        Log.e(TAG, "onScannedMultiple: " + barcodes.size());
+
+        for (Barcode barcode : barcodes) {
+            Log.e(TAG, "Value: " + barcode.displayValue);
+        }
+    }
+
+    @Override
+    public void onBitmapScanned(SparseArray<Barcode> sparseArray) {
+
+    }
+
+    @Override
+    public void onScanError(String errorMessage) {
+
     }
 }

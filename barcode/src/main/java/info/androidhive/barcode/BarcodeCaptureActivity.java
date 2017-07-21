@@ -78,6 +78,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity {
     // helper objects for detecting taps and pinches.
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
+    private BarcodeReader.BarcodeListener listener;
 
     /**
      * Initializes the UI and creates the detector pipeline.
@@ -171,7 +172,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity {
         // graphics for each barcode on screen.  The factory is used by the multi-processor to
         // create a separate tracker instance for each barcode.
         BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(context).build();
-        BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(mGraphicOverlay);
+        BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(mGraphicOverlay, listener);
         barcodeDetector.setProcessor(
                 new MultiProcessor.Builder<>(barcodeFactory).build());
 
