@@ -19,6 +19,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.support.annotation.RequiresPermission;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -47,6 +48,7 @@ public class CameraSourcePreview extends ViewGroup {
         mSurfaceAvailable = false;
 
         mSurfaceView = new SurfaceView(context);
+        mSurfaceView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.holo_red_dark));
         mSurfaceView.getHolder().addCallback(new SurfaceCallback());
         addView(mSurfaceView);
     }
@@ -112,7 +114,7 @@ public class CameraSourcePreview extends ViewGroup {
             try {
                 startIfReady();
             } catch (SecurityException se) {
-                Log.e(TAG,"Do not have permission to start the camera", se);
+                Log.e(TAG, "Do not have permission to start the camera", se);
             } catch (IOException e) {
                 Log.e(TAG, "Could not start camera source.", e);
             }
@@ -153,12 +155,12 @@ public class CameraSourcePreview extends ViewGroup {
 
         // Computes height and width for potentially doing fit width.
         int childWidth = layoutWidth;
-        int childHeight = (int)(((float) layoutWidth / (float) width) * height);
+        int childHeight = (int) (((float) layoutWidth / (float) width) * height);
 
         // If height is too tall using fit width, does fit height instead.
         if (childHeight > layoutHeight) {
             childHeight = layoutHeight;
-            childWidth = (int)(((float) layoutHeight / (float) height) * width);
+            childWidth = (int) (((float) layoutHeight / (float) height) * width);
         }
 
         for (int i = 0; i < getChildCount(); ++i) {
@@ -168,7 +170,7 @@ public class CameraSourcePreview extends ViewGroup {
         try {
             startIfReady();
         } catch (SecurityException se) {
-            Log.e(TAG,"Do not have permission to start the camera", se);
+            Log.e(TAG, "Do not have permission to start the camera", se);
         } catch (IOException e) {
             Log.e(TAG, "Could not start camera source.", e);
         }

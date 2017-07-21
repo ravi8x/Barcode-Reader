@@ -39,6 +39,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         useFlash = findViewById(R.id.use_flash);
 
         findViewById(R.id.read_barcode).setOnClickListener(this);*/
+
+//        Intent intent = new Intent(this, BarcodeCaptureActivity.class);
+//        intent.putExtra(BarcodeCaptureActivity.AutoFocus, autoFocus.isChecked());
+//        intent.putExtra(BarcodeCaptureActivity.UseFlash, useFlash.isChecked());
+//
+//        startActivityForResult(intent, RC_BARCODE_CAPTURE);
     }
 
     /**
