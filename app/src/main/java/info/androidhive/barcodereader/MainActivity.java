@@ -21,8 +21,7 @@ public class MainActivity extends AppCompatActivity implements BarcodeReader.Bar
         setContentView(R.layout.activity_main);
 
         BarcodeReader barcodeReader = (BarcodeReader) getSupportFragmentManager().findFragmentById(R.id.barcode_fragment);
-        barcodeReader.setAutoFocus(true);
-        barcodeReader.setUseFlash(true);
+        barcodeReader.setBeepSoundFile("shutter.mp3");
     }
 
     @Override

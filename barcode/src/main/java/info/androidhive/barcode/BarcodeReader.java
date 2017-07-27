@@ -10,12 +10,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.TypedArray;
 import android.hardware.Camera;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.GestureDetector;
@@ -41,7 +45,7 @@ import info.androidhive.barcode.camera.CameraSourcePreview;
 import info.androidhive.barcode.camera.GraphicOverlay;
 
 public class BarcodeReader extends Fragment implements View.OnTouchListener, BarcodeGraphicTracker.BarcodeGraphicTrackerListener {
-    private static final String TAG = "Barcode-reader";
+    private static final String TAG = BarcodeReader.class.getSimpleName();
 
     // intent request code to handle updating play services if needed.
     private static final int RC_HANDLE_GMS = 9001;
@@ -50,8 +54,10 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
     private static final int RC_HANDLE_CAMERA_PERM = 2;
 
     // constants used to pass extra data in the intent
-    public boolean autoFocus = false;
-    public boolean useFlash = true;
+    private boolean autoFocus = false;
+    private boolean useFlash = false;
+    private boolean playBeep = false;
+    private String beepSoundFile;
     public static final String BarcodeObject = "Barcode";
 
     private CameraSource mCameraSource;
@@ -67,12 +73,8 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
         // Required empty public constructor
     }
 
-    public void setAutoFocus(boolean autoFocus) {
-        this.autoFocus = autoFocus;
-    }
-
-    public void setUseFlash(boolean useFlash) {
-        this.useFlash = useFlash;
+    public void setBeepSoundFile(String fileName) {
+        beepSoundFile = fileName;
     }
 
     @Override
@@ -103,6 +105,16 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
 
         view.setOnTouchListener(this);
         return view;
+    }
+
+    @Override
+    public void onInflate(Context context, AttributeSet attrs, Bundle savedInstanceState) {
+        super.onInflate(context, attrs, savedInstanceState);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.BarcodeReader);
+        autoFocus = a.getBoolean(R.styleable.BarcodeReader_auto_focus, true);
+        useFlash = a.getBoolean(R.styleable.BarcodeReader_use_flash, false);
+        playBeep = a.getBoolean(R.styleable.BarcodeReader_play_beep_sound, false);
+        a.recycle();
     }
 
     @Override
@@ -271,10 +283,6 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
         if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Camera permission granted - initialize the camera source");
             // we have permission, so create the camerasource
-
-            // TODO - pass these values from activity
-            boolean autoFocus = true;
-            boolean useFlash = true;
             createCameraSource(autoFocus, useFlash);
             return;
         }
@@ -382,26 +390,36 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
 
     @Override
     public void onScanned(Barcode barcode) {
-        if (mListener != null)
+        if (mListener != null) {
             mListener.onScanned(barcode);
+
+            if (playBeep)
+                playBeep();
+        }
     }
 
     @Override
     public void onScannedMultiple(List<Barcode> barcodes) {
-        if (mListener != null)
+        if (mListener != null) {
             mListener.onScannedMultiple(barcodes);
+
+            if (playBeep)
+                playBeep();
+        }
     }
 
     @Override
     public void onBitmapScanned(SparseArray<Barcode> sparseArray) {
-        if (mListener != null)
+        if (mListener != null) {
             mListener.onBitmapScanned(sparseArray);
+        }
     }
 
     @Override
     public void onScanError(String errorMessage) {
-        if (mListener != null)
+        if (mListener != null) {
             mListener.onScanError(errorMessage);
+        }
     }
 
     private class CaptureGestureListener extends GestureDetector.SimpleOnGestureListener {
@@ -462,6 +480,28 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
         @Override
         public void onScaleEnd(ScaleGestureDetector detector) {
             mCameraSource.doZoom(detector.getScaleFactor());
+        }
+    }
+
+    public void playBeep() {
+        Log.e(TAG, "playBeep: " + beepSoundFile);
+        MediaPlayer m = new MediaPlayer();
+        try {
+            if (m.isPlaying()) {
+                m.stop();
+                m.release();
+                m = new MediaPlayer();
+            }
+
+            AssetFileDescriptor descriptor = getActivity().getAssets().openFd( beepSoundFile != null ? beepSoundFile : "beep.mp3");
+            m.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
+            descriptor.close();
+
+            m.prepare();
+            m.setVolume(1f, 1f);
+            m.start();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

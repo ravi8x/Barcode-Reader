@@ -10,7 +10,10 @@
         android:id="@+id/barcode_fragment"
         android:name="info.androidhive.barcode.BarcodeReader"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:auto_focus="true"
+        app:play_beep_sound="true"
+        app:use_flash="false" />
 
     <info.androidhive.barcode.SmartScannerOverlayView
         android:layout_width="match_parent"

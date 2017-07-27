@@ -3,4 +3,10 @@
     <declare-styleable name="SmartScannerOverlayView">
         <attr name="height_offset" format="integer" />
     </declare-styleable>
+
+    <declare-styleable name="BarcodeReader">
+        <attr name="auto_focus" format="boolean" />
+        <attr name="use_flash" format="boolean" />
+        <attr name="play_beep_sound" format="boolean" />
+    </declare-styleable>
 </resources>
