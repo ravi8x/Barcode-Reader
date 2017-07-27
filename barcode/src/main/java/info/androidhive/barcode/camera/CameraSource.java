@@ -285,7 +285,7 @@ public class CameraSource {
     public interface AutoFocusCallback {
         /**
          * Called when the camera auto focus completes.  If the camera
-         * does not support auto-focus and autoFocus is called,
+         * does not support auto-focus and setAutoFocus is called,
          * onAutoFocus will be called immediately with a fake value of
          * <code>success</code> set to <code>true</code>.
          * <p/>

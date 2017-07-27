@@ -11,11 +11,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -42,7 +40,7 @@ import info.androidhive.barcode.camera.CameraSource;
 import info.androidhive.barcode.camera.CameraSourcePreview;
 import info.androidhive.barcode.camera.GraphicOverlay;
 
-public class BarcodeReader extends Fragment implements View.OnTouchListener {
+public class BarcodeReader extends Fragment implements View.OnTouchListener, BarcodeGraphicTracker.BarcodeGraphicTrackerListener {
     private static final String TAG = "Barcode-reader";
 
     // intent request code to handle updating play services if needed.
@@ -52,8 +50,8 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener {
     private static final int RC_HANDLE_CAMERA_PERM = 2;
 
     // constants used to pass extra data in the intent
-    public static final String AutoFocus = "AutoFocus";
-    public static final String UseFlash = "UseFlash";
+    public boolean autoFocus = false;
+    public boolean useFlash = true;
     public static final String BarcodeObject = "Barcode";
 
     private CameraSource mCameraSource;
@@ -63,14 +61,18 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener {
     // helper objects for detecting taps and pinches.
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
-    private BarcodeListener listener;
-
-    public void setListener(BarcodeListener listener) {
-        this.listener = listener;
-    }
+    private BarcodeReaderListener mListener;
 
     public BarcodeReader() {
         // Required empty public constructor
+    }
+
+    public void setAutoFocus(boolean autoFocus) {
+        this.autoFocus = autoFocus;
+    }
+
+    public void setUseFlash(boolean useFlash) {
+        this.useFlash = useFlash;
     }
 
     @Override
@@ -87,11 +89,6 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener {
         mPreview = view.findViewById(R.id.preview);
         mGraphicOverlay = view.findViewById(R.id.graphicOverlay);
 
-
-        // read parameters from the intent used to launch the activity.
-        boolean autoFocus = true;
-        boolean useFlash = false;
-
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
         int rc = ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA);
@@ -106,6 +103,17 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener {
 
         view.setOnTouchListener(this);
         return view;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof BarcodeReaderListener) {
+            mListener = (BarcodeReaderListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement BarcodeReaderListener");
+        }
     }
 
     /**
@@ -155,7 +163,7 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener {
         // graphics for each barcode on screen.  The factory is used by the multi-processor to
         // create a separate tracker instance for each barcode.
         BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(context).build();
-        BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(mGraphicOverlay, listener);
+        BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(mGraphicOverlay, this);
         barcodeDetector.setProcessor(
                 new MultiProcessor.Builder<>(barcodeFactory).build());
 
@@ -372,6 +380,30 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener {
         return b || c || view.onTouchEvent(motionEvent);
     }
 
+    @Override
+    public void onScanned(Barcode barcode) {
+        if (mListener != null)
+            mListener.onScanned(barcode);
+    }
+
+    @Override
+    public void onScannedMultiple(List<Barcode> barcodes) {
+        if (mListener != null)
+            mListener.onScannedMultiple(barcodes);
+    }
+
+    @Override
+    public void onBitmapScanned(SparseArray<Barcode> sparseArray) {
+        if (mListener != null)
+            mListener.onBitmapScanned(sparseArray);
+    }
+
+    @Override
+    public void onScanError(String errorMessage) {
+        if (mListener != null)
+            mListener.onScanError(errorMessage);
+    }
+
     private class CaptureGestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
@@ -433,10 +465,10 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener {
         }
     }
 
-    public interface BarcodeListener {
+    public interface BarcodeReaderListener {
         void onScanned(Barcode barcode);
 
-        void onScannedMultiple(List<Barcode> barcode);
+        void onScannedMultiple(List<Barcode> barcodes);
 
         void onBitmapScanned(SparseArray<Barcode> sparseArray);
 

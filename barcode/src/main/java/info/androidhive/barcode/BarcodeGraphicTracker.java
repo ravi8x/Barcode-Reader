@@ -36,9 +36,9 @@ import info.androidhive.barcode.camera.GraphicOverlay;
 class BarcodeGraphicTracker extends Tracker<Barcode> {
     private GraphicOverlay<BarcodeGraphic> mOverlay;
     private BarcodeGraphic mGraphic;
-    private BarcodeReader.BarcodeListener listener;
+    private BarcodeGraphicTrackerListener listener;
 
-    BarcodeGraphicTracker(GraphicOverlay<BarcodeGraphic> overlay, BarcodeGraphic graphic, BarcodeReader.BarcodeListener listener) {
+    BarcodeGraphicTracker(GraphicOverlay<BarcodeGraphic> overlay, BarcodeGraphic graphic, BarcodeGraphicTrackerListener listener) {
         mOverlay = overlay;
         mGraphic = graphic;
         this.listener = listener;
@@ -101,5 +101,15 @@ class BarcodeGraphicTracker extends Tracker<Barcode> {
     @Override
     public void onDone() {
         mOverlay.remove(mGraphic);
+    }
+
+    public interface BarcodeGraphicTrackerListener {
+        void onScanned(Barcode barcode);
+
+        void onScannedMultiple(List<Barcode> barcodes);
+
+        void onBitmapScanned(SparseArray<Barcode> sparseArray);
+
+        void onScanError(String errorMessage);
     }
 }
