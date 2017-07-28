@@ -14,24 +14,28 @@ import info.androidhive.barcode.BarcodeReader;
 public class MainActivity extends AppCompatActivity implements BarcodeReader.BarcodeReaderListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    private BarcodeReader barcodeReader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        BarcodeReader barcodeReader = (BarcodeReader) getSupportFragmentManager().findFragmentById(R.id.barcode_fragment);
+        barcodeReader = (BarcodeReader) getSupportFragmentManager().findFragmentById(R.id.barcode_fragment);
         barcodeReader.setBeepSoundFile("shutter.mp3");
     }
 
     @Override
     public void onScanned(Barcode barcode) {
         Log.e(TAG, "onScanned: " + barcode.displayValue);
+        barcodeReader.playBeep();
+
+        barcodeReader.pauseScanning();
     }
 
     @Override
     public void onScannedMultiple(List<Barcode> barcodes) {
         Log.e(TAG, "onScannedMultiple: " + barcodes.size());
+        barcodeReader.playBeep();
 
         for (Barcode barcode : barcodes) {
             Log.e(TAG, "Value: " + barcode.displayValue);

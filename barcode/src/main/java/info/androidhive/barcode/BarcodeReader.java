@@ -56,9 +56,9 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
     // constants used to pass extra data in the intent
     private boolean autoFocus = false;
     private boolean useFlash = false;
-    private boolean playBeep = false;
     private String beepSoundFile;
     public static final String BarcodeObject = "Barcode";
+    private boolean isPaused = false;
 
     private CameraSource mCameraSource;
     private CameraSourcePreview mPreview;
@@ -75,6 +75,14 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
 
     public void setBeepSoundFile(String fileName) {
         beepSoundFile = fileName;
+    }
+
+    public void pauseScanning() {
+        isPaused = true;
+    }
+
+    public void resumeScanning() {
+        isPaused = false;
     }
 
     @Override
@@ -113,7 +121,6 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.BarcodeReader);
         autoFocus = a.getBoolean(R.styleable.BarcodeReader_auto_focus, true);
         useFlash = a.getBoolean(R.styleable.BarcodeReader_use_flash, false);
-        playBeep = a.getBoolean(R.styleable.BarcodeReader_play_beep_sound, false);
         a.recycle();
     }
 
@@ -390,21 +397,15 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
 
     @Override
     public void onScanned(Barcode barcode) {
-        if (mListener != null) {
+        if (mListener != null && !isPaused) {
             mListener.onScanned(barcode);
-
-            if (playBeep)
-                playBeep();
         }
     }
 
     @Override
     public void onScannedMultiple(List<Barcode> barcodes) {
-        if (mListener != null) {
+        if (mListener != null && !isPaused) {
             mListener.onScannedMultiple(barcodes);
-
-            if (playBeep)
-                playBeep();
         }
     }
 
@@ -484,7 +485,6 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
     }
 
     public void playBeep() {
-        Log.e(TAG, "playBeep: " + beepSoundFile);
         MediaPlayer m = new MediaPlayer();
         try {
             if (m.isPlaying()) {
@@ -493,7 +493,7 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
                 m = new MediaPlayer();
             }
 
-            AssetFileDescriptor descriptor = getActivity().getAssets().openFd( beepSoundFile != null ? beepSoundFile : "beep.mp3");
+            AssetFileDescriptor descriptor = getActivity().getAssets().openFd(beepSoundFile != null ? beepSoundFile : "beep.mp3");
             m.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
             descriptor.close();
 
