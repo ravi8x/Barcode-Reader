@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <!-- Barcode Reader fragment -->
     <fragment
         android:id="@+id/barcode_fragment"
         android:name="info.androidhive.barcode.BarcodeReader"
@@ -14,6 +15,7 @@
         app:auto_focus="true"
         app:use_flash="false" />
 
+    <!-- Scanner overlay animation -->
     <info.androidhive.barcode.ScannerOverlay
         android:layout_width="match_parent"
         android:layout_height="match_parent"

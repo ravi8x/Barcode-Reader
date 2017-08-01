@@ -21,11 +21,24 @@ public class MainActivity extends AppCompatActivity implements BarcodeReader.Bar
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // getting barcode instance
         barcodeReader = (BarcodeReader) getSupportFragmentManager().findFragmentById(R.id.barcode_fragment);
 
 
-        // changing beep sound
+        /***
+         * Providing beep sound. The sound file has to be placed in
+         * `assets` folder
+         */
         // barcodeReader.setBeepSoundFile("shutter.mp3");
+
+        /**
+         * Pausing / resuming barcode reader. This will be useful when you want to
+         * do some foreground user interaction while leaving the barcode
+         * reader in background
+         * */
+        // barcodeReader.pauseScanning();
+        // barcodeReader.resumeScanning();
     }
 
     @Override
