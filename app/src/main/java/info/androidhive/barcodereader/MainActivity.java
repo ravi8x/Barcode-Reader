@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseArray;
+import android.widget.Toast;
 
 import com.google.android.gms.vision.barcode.Barcode;
 
@@ -21,25 +22,41 @@ public class MainActivity extends AppCompatActivity implements BarcodeReader.Bar
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         barcodeReader = (BarcodeReader) getSupportFragmentManager().findFragmentById(R.id.barcode_fragment);
-        barcodeReader.setBeepSoundFile("shutter.mp3");
+
+
+        // changing beep sound
+        // barcodeReader.setBeepSoundFile("shutter.mp3");
     }
 
     @Override
-    public void onScanned(Barcode barcode) {
+    public void onScanned(final Barcode barcode) {
         Log.e(TAG, "onScanned: " + barcode.displayValue);
         barcodeReader.playBeep();
 
-        barcodeReader.pauseScanning();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), "Barcode: " + barcode.displayValue, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
     public void onScannedMultiple(List<Barcode> barcodes) {
         Log.e(TAG, "onScannedMultiple: " + barcodes.size());
-        barcodeReader.playBeep();
 
+        String codes = "";
         for (Barcode barcode : barcodes) {
-            Log.e(TAG, "Value: " + barcode.displayValue);
+            codes += barcode.displayValue + ", ";
         }
+
+        final String finalCodes = codes;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), "Barcodes: " + finalCodes, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

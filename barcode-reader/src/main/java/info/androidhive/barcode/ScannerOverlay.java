@@ -16,33 +16,32 @@ import android.view.ViewGroup;
  * Created by ravi on 04/05/17.
  */
 
-public class SmartScannerOverlayView extends ViewGroup {
-    float left, top, endY;
-    int rectWidth;
-    int heightOffset, frames = 5;
-    boolean reverseAnimation;
-    Context context;
+public class ScannerOverlay extends ViewGroup {
+    private float left, top, endY;
+    private int rectWidth, rectHeight;
+    private int frames;
+    private boolean revAnimation;
+    private int lineColor, lineWidth;
 
-    public SmartScannerOverlayView(Context context) {
+    public ScannerOverlay(Context context) {
         super(context);
-        this.context = context;
     }
 
-    public SmartScannerOverlayView(Context context, AttributeSet attrs) {
+    public ScannerOverlay(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
-        this.context = context;
     }
 
-    public SmartScannerOverlayView(Context context, AttributeSet attrs, int defStyle) {
+    public ScannerOverlay(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        this.context = context;
         TypedArray a = context.getTheme().obtainStyledAttributes(
                 attrs,
-                R.styleable.SmartScannerOverlayView,
+                R.styleable.ScannerOverlay,
                 0, 0);
-
-        heightOffset = a.getInteger(R.styleable.SmartScannerOverlayView_height_offset, 0);
-        rectWidth = getResources().getInteger(R.integer.scanner_rect_width);
+        rectWidth = a.getInteger(R.styleable.ScannerOverlay_square_width, getResources().getInteger(R.integer.scanner_rect_width));
+        rectHeight = a.getInteger(R.styleable.ScannerOverlay_square_height, getResources().getInteger(R.integer.scanner_rect_height));
+        lineColor = a.getColor(R.styleable.ScannerOverlay_line_color, ContextCompat.getColor(context, R.color.scanner_line));
+        lineWidth = a.getInteger(R.styleable.ScannerOverlay_line_width, getResources().getInteger(R.integer.line_width));
+        frames = a.getInteger(R.styleable.ScannerOverlay_line_speed, getResources().getInteger(R.integer.line_width));
     }
 
     @Override
@@ -57,7 +56,7 @@ public class SmartScannerOverlayView extends ViewGroup {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         left = (w - dpToPx(rectWidth)) / 2;
-        top = (h - dpToPx(rectWidth)) / 2;
+        top = (h - dpToPx(rectHeight)) / 2;
         endY = top;
         super.onSizeChanged(w, h, oldw, oldh);
     }
@@ -75,8 +74,6 @@ public class SmartScannerOverlayView extends ViewGroup {
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
-
-
     }
 
     @Override
@@ -89,28 +86,28 @@ public class SmartScannerOverlayView extends ViewGroup {
         eraser.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
 
 
-        RectF rect = new RectF(left, top, dpToPx(rectWidth) + left, dpToPx(rectWidth) + top);
+        RectF rect = new RectF(left, top, dpToPx(rectWidth) + left, dpToPx(rectHeight) + top);
         canvas.drawRoundRect(rect, (float) cornerRadius, (float) cornerRadius, eraser);
 
         // draw horizontal line
         Paint line = new Paint();
-        line.setColor(ContextCompat.getColor(getContext(), R.color.scanner_line));
-        line.setStrokeWidth(4f);
+        line.setColor(lineColor);
+        line.setStrokeWidth(Float.valueOf(lineWidth));
 
-        if (endY >= top + dpToPx(rectWidth) + frames) {
-            reverseAnimation = true;
+        // draw the line to product animation
+        if (endY >= top + dpToPx(rectHeight) + frames) {
+            revAnimation = true;
         } else if (endY == top + frames) {
-            reverseAnimation = false;
+            revAnimation = false;
         }
 
-        if (reverseAnimation) {
+        // check if the line has reached to bottom
+        if (revAnimation) {
             endY -= frames;
         } else {
             endY += frames;
         }
-
         canvas.drawLine(left, endY, left + dpToPx(rectWidth), endY, line);
-
         invalidate();
     }
 }

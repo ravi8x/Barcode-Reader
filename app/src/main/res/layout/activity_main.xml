@@ -14,10 +14,14 @@
         app:auto_focus="true"
         app:use_flash="false" />
 
-    <info.androidhive.barcode.SmartScannerOverlayView
+    <info.androidhive.barcode.ScannerOverlay
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#55000000"
-        app:height_offset="150" />
+        android:background="#44000000"
+        app:line_color="#7323DC"
+        app:line_speed="6"
+        app:line_width="4"
+        app:square_height="200"
+        app:square_width="200" />
 
 </RelativeLayout>
