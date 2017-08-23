@@ -3,7 +3,14 @@ apply plugin: 'com.jfrog.artifactory'
 apply plugin: 'maven-publish'
 
 def packageName = 'info.androidhive'
-def libraryVersion = '1.1.0'
+def libraryVersion = '1.1.2'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+tasks.withType(org.gradle.api.tasks.javadoc.Javadoc) {
+    options.encoding = 'UTF-8'
+}
 
 publishing {
     publications {
@@ -12,18 +19,43 @@ publishing {
             version = libraryVersion
             artifactId project.getName()
 
-            // Tell maven to prepare the generated "*.aar" file for publishing
-            artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
-
-            /*pom.withXml {
+            pom.withXml {
                 def dependencies = asNode().appendNode('dependencies')
-                configurations.getByName("_releaseCompile").getResolvedConfiguration().getFirstLevelModuleDependencies().each {
+                configurations.getByName("releaseCompileClasspath").getResolvedConfiguration().getFirstLevelModuleDependencies().each {
                     def dependency = dependencies.appendNode('dependency')
                     dependency.appendNode('groupId', it.moduleGroup)
                     dependency.appendNode('artifactId', it.moduleName)
                     dependency.appendNode('version', it.moduleVersion)
                 }
-            }*/
+            }
+
+            task androidJavadocs(type: Javadoc) {
+                failOnError false
+                source = android.sourceSets.main.java.srcDirs
+                // encoding = 'UTF-8'
+                classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+            }
+
+            task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
+                classifier = 'javadoc'
+                // encoding = 'UTF-8'
+                from androidJavadocs.destinationDir
+            }
+
+            task androidSourcesJar(type: Jar) {
+                classifier = 'sources'
+                from android.sourceSets.main.java.sourceFiles
+            }
+
+            artifacts {
+                archives androidSourcesJar
+                archives androidJavadocsJar
+            }
+
+            // Tell maven to prepare the generated "*.aar" file for publishing
+            artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
+            artifact androidJavadocsJar
+            artifact androidSourcesJar
         }
     }
 }
@@ -44,6 +76,7 @@ artifactory {
         }
     }
 }
+
 
 android {
     compileSdkVersion 26
