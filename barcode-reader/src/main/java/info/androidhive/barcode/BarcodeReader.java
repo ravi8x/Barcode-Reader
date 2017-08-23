@@ -17,7 +17,6 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
@@ -74,6 +73,10 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
         // Required empty public constructor
     }
 
+    public void setListener(BarcodeReaderListener barcodeReaderListener) {
+        mListener = barcodeReaderListener;
+    }
+
     public void setBeepSoundFile(String fileName) {
         beepSoundFile = fileName;
     }
@@ -100,25 +103,20 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
         mPreview = view.findViewById(R.id.preview);
         mGraphicOverlay = view.findViewById(R.id.graphicOverlay);
 
-        gestureDetector = new GestureDetector(getActivity(), new CaptureGestureListener());
-        scaleGestureDetector = new ScaleGestureDetector(getActivity(), new ScaleListener());
-
-        view.setOnTouchListener(this);
-        return view;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
         int rc = ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA);
         if (rc == PackageManager.PERMISSION_GRANTED) {
             createCameraSource(autoFocus, useFlash);
         } else {
-            requestCameraPermission();
+            requestCameraPermission(view);
         }
+
+        gestureDetector = new GestureDetector(getActivity(), new CaptureGestureListener());
+        scaleGestureDetector = new ScaleGestureDetector(getActivity(), new ScaleListener());
+
+        view.setOnTouchListener(this);
+        return view;
     }
 
     @Override
@@ -135,9 +133,6 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
         super.onAttach(context);
         if (context instanceof BarcodeReaderListener) {
             mListener = (BarcodeReaderListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement BarcodeReaderListener");
         }
     }
 
@@ -146,7 +141,7 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
      * showing a "Snackbar" message of why the permission is needed then
      * sending the request.
      */
-    private void requestCameraPermission() {
+    private void requestCameraPermission(View view) {
         Log.w(TAG, "Camera permission is not granted. Requesting permission");
 
         final String[] permissions = new String[]{Manifest.permission.CAMERA};
@@ -157,7 +152,7 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
             return;
         }
 
-        /*final Activity thisActivity = getActivity();
+        final Activity thisActivity = getActivity();
 
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
@@ -167,7 +162,7 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
             }
         };
 
-        view.findViewById(R.id.topLayout).setOnClickListener(listener);*/
+        view.findViewById(R.id.topLayout).setOnClickListener(listener);
     }
 
 
@@ -311,6 +306,14 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
                 // finis()
             }
         };
+
+
+        // TODO - this is not doing anything
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Multitracker sample")
+                .setMessage(R.string.no_camera_permission)
+                .setPositiveButton(R.string.ok, listener)
+                .show();
     }
 
     /**
