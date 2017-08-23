@@ -16,7 +16,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-vision:11.0.2'
 
     // barcode reader
-    implementation 'info.androidhive:barcode-reader:1.1.2'
+    implementation 'info.androidhive:barcode-reader:1.1.3'
 }
 ```
 
@@ -66,6 +66,15 @@ public class MainActivity extends AppCompatActivity implements BarcodeReader.Bar
     }
 }
 ```
+
+Adding Barcode Reader in Fragment
+----
+In fragment the barcode reader can be added easily but the scanner listener <code>barcodeReader.setListener()</code> has to 
+be set manually.
+
+Check the example fragment code in <code>BarcodeFragment.java</code> and <code>BarcodeFragmentTestActivity.java</code>
+
+https://github.com/ravi8x/Barcode-Reader/tree/master/example/src/main/java/info/androidhive/barcodereader
 
 Adding Scanner Overlay Scanning Indicator
 ----
