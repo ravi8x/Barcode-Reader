@@ -146,9 +146,8 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
 
         final String[] permissions = new String[]{Manifest.permission.CAMERA};
 
-        if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                Manifest.permission.CAMERA)) {
-            ActivityCompat.requestPermissions(getActivity(), permissions, RC_HANDLE_CAMERA_PERM);
+        if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+            requestPermissions(permissions, RC_HANDLE_CAMERA_PERM);
             return;
         }
 
@@ -157,8 +156,7 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ActivityCompat.requestPermissions(thisActivity, permissions,
-                        RC_HANDLE_CAMERA_PERM);
+                requestPermissions(permissions, RC_HANDLE_CAMERA_PERM);
             }
         };
 
