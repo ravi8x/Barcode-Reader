@@ -146,7 +146,7 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
 
         final String[] permissions = new String[]{Manifest.permission.CAMERA};
 
-        if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+        if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
             requestPermissions(permissions, RC_HANDLE_CAMERA_PERM);
             return;
         }
