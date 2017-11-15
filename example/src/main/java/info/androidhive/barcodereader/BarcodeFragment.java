@@ -83,4 +83,9 @@ public class BarcodeFragment extends Fragment implements BarcodeReader.BarcodeRe
     public void onScanError(String errorMessage) {
         Log.e(TAG, "onScanError: " + errorMessage);
     }
+
+    @Override
+    public void onCameraPermissionDenied() {
+        Toast.makeText(getActivity(), "Camera permission denied!", Toast.LENGTH_LONG).show();
+    }
 }

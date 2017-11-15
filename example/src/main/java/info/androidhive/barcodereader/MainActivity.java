@@ -81,4 +81,10 @@ public class MainActivity extends AppCompatActivity implements BarcodeReader.Bar
     public void onScanError(String errorMessage) {
 
     }
+
+    @Override
+    public void onCameraPermissionDenied() {
+        Toast.makeText(getApplicationContext(), "Camera permission denied!", Toast.LENGTH_LONG).show();
+        finish();
+    }
 }
