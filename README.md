@@ -16,7 +16,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-vision:11.0.2'
 
     // barcode reader
-    implementation 'info.androidhive:barcode-reader:1.1.3'
+    implementation 'info.androidhive:barcode-reader:1.1.5'
 }
 ```
 
