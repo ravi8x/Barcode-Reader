@@ -58,6 +58,7 @@ public class ScannerOverlay extends ViewGroup {
         left = (w - dpToPx(rectWidth)) / 2;
         top = (h - dpToPx(rectHeight)) / 2;
         endY = top;
+        revAnimation = false;
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
