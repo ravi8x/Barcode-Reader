@@ -74,6 +74,16 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
     private static final int REQUEST_PERMISSION_SETTING = 102;
     private boolean sentToSettings = false;
 
+    public int getCameraFacing() {
+        return mFacing;
+    }
+
+    public void setCameraFacing(int mFacing) {
+        this.mFacing = mFacing;
+    }
+
+    int mFacing;
+
     public BarcodeReader() {
         // Required empty public constructor
     }
@@ -247,8 +257,9 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
         // Creates and starts the camera.  Note that this uses a higher resolution in comparison
         // to other detection examples to enable the barcode detector to detect small barcodes
         // at long distances.
+
         CameraSource.Builder builder = new CameraSource.Builder(getActivity(), barcodeDetector)
-                .setFacing(CameraSource.CAMERA_FACING_BACK)
+                .setFacing(mFacing)
                 .setRequestedPreviewSize(1600, 1024)
                 .setRequestedFps(15.0f);
 
