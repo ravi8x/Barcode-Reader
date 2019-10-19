@@ -5,8 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/Barcode-Reader.iml" filepath="$PROJECT_DIR$/.idea/Barcode-Reader.iml" />
       <module fileurl="file://$PROJECT_DIR$/BarcodeReader.iml" filepath="$PROJECT_DIR$/BarcodeReader.iml" />
       <module fileurl="file://$PROJECT_DIR$/barcode-reader/barcode-reader.iml" filepath="$PROJECT_DIR$/barcode-reader/barcode-reader.iml" />
-      <module fileurl="file://$PROJECT_DIR$/barcode-reader/barcode-reader.iml" filepath="$PROJECT_DIR$/barcode-reader/barcode-reader.iml" />
-      <module fileurl="file://$PROJECT_DIR$/example/example.iml" filepath="$PROJECT_DIR$/example/example.iml" />
       <module fileurl="file://$PROJECT_DIR$/example/example.iml" filepath="$PROJECT_DIR$/example/example.iml" />
     </modules>
   </component>

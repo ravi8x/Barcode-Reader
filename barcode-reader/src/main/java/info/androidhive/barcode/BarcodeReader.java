@@ -74,7 +74,7 @@ public class BarcodeReader extends Fragment implements View.OnTouchListener, Bar
     private static final int REQUEST_PERMISSION_SETTING = 102;
     private boolean sentToSettings = false;
 
-    public int getCameraFacing() {
+    private int getCameraFacing() {
         return mFacing;
     }
 
