@@ -101,6 +101,7 @@ public class CameraSourcePreview extends ViewGroup {
                     mOverlay.setCameraInfo(max, min, mCameraSource.getCameraFacing());
                 }
                 mOverlay.clear();
+                requestLayout();
             }
             mStartRequested = false;
         }
